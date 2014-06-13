@@ -12,7 +12,9 @@ Allows you to lock your plugins and themes from being updated and keep notes on 
 
 == Description ==
 
-It hopefully doesn't happen alot, but sometimes you have to edit the core code of a plugin or theme. It's not ideal, and it sucks, but, whatever the reason, you had to do it. Now you're worried you're going to forget about your edit, update your plugin or theme (as you usually should), and lose your edits! Well, instead of worrying, use the Lock Your Updates Plugins/Themes Manager to lock your plugins and themes from being updated and to store notes to help you remember what edits you made, all from the plugins or themes admin management page.
+It hopefully doesn't happen alot, but sometimes you have to edit the core code of a plugin or theme. It's not ideal, and it sucks, but, whatever the reason, you had to do it. Now you're worried you're going to forget about your edit, update your plugin or theme (as you usually should), and lose your edits!
+
+Well, instead of worrying, use the Lock Your Updates Plugins/Themes Manager to lock your plugins and themes from being updated and to store notes to help you remember what edits you made, all from the plugins or themes admin management page.
 
 The Lock Your Updates Plugins/Themes Manager is multisite compatible.
 
