@@ -26,9 +26,12 @@ The Lock Your Updates Plugins/Themes Manager is multisite compatible.
 * Lock Your Updates is multisite compatible.
 * If running WordPress multisite, Lock Your Updates provides an admin column that shows you where your plugins and themes are active.
 
+= If You'd Like To Contribute =
+
+If you'd like to contribute to this plugin, feel free to do so on the ["Lock Your Updates" GitHub repo](https://github.com/bamadesigner/lock-your-updates).
 = Credits =
 
-A big shoutout to Aaron Robb ([@aaron_robb](https://twitter.com/aaron_robb)) who helped make this plugin grow.
+A big shoutout to Aaron Robb [@aaron_robb](https://twitter.com/aaron_robb) who helped make this plugin grow.
 
 == Installation ==
 
