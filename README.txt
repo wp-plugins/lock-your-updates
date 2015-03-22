@@ -71,9 +71,9 @@ If you need help activating the plugin, here are a few different methods:
 == Changelog ==
 
 = 1.1 =
-* Added a preview of an item's notes on the plugins/themes list table.
+* Added a preview of an item's notes on the plugins/themes list table and overlay.
 
 == Upgrade Notice ==
 
 = 1.1 =
-* Added a preview of an item's notes on the plugins/themes list table.
+* Added a preview of an item's notes on the plugins/themes list table and overlay.
