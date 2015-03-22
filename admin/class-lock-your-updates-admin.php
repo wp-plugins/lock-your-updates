@@ -129,6 +129,9 @@ class Lock_Your_Updates_Admin {
 		// AJAX function to retrieve item's "preview notes" row
 		add_action( 'wp_ajax_lock_your_updates_get_item_preview_notes_row', array( $this, 'wp_ajax_get_item_preview_notes_row' ) );
 		
+		// AJAX function to retrieve theme's "preview notes" area
+		add_action( 'wp_ajax_lock_your_updates_get_themes_preview_notes_area', array( $this, 'wp_ajax_get_themes_preview_notes_area' ) );
+		
 	}
 
 	/**
@@ -565,10 +568,10 @@ class Lock_Your_Updates_Admin {
 							$notes_wrapper_classes[] = 'empty';
 							
 						// Get notes URL
-						$notes_url = $this->get_edit_notes_url( $type, $item_id );
+						$edit_notes_url = $this->get_edit_notes_url( $type, $item_id );
 							
 						// Create the notes URL text
-						$notes_url_text = sprintf( __( 'Edit the notes for this %1$s', $this->lock_your_updates->plugin_slug ), $singular_type );
+						$edit_notes_url_text = sprintf( __( 'Edit the notes for this %1$s', $this->lock_your_updates->plugin_slug ), $singular_type );
 						
 						// What is the HTML ID?
 						$item_html_id = ( 'plugins' == $type && isset( $item_data[ 'Name' ] ) ) ? sanitize_title( $item_data[ 'Name' ] ) : $item_id;
@@ -576,7 +579,7 @@ class Lock_Your_Updates_Admin {
 						// Add notes icon
 						?> <div class="<?php echo implode( ' ', $notes_wrapper_classes ); ?>">
 							<div class="lines"></div>
-							<a data-item-row="<?php echo $item_html_id; ?>" class="icon lock-your-updates-edit-notes" href="<?php echo $notes_url; ?>" title="<?php echo esc_attr( $notes_url_text ); ?>"><?php echo $notes_url_text; ?></a>
+							<a data-item-row="<?php echo $item_html_id; ?>" class="icon lock-your-updates-edit-notes" href="<?php echo $edit_notes_url; ?>" title="<?php echo esc_attr( $edit_notes_url_text ); ?>"><?php echo $edit_notes_url_text; ?></a>
 						</div><?php
 					
 					}
@@ -897,7 +900,10 @@ class Lock_Your_Updates_Admin {
 						// Add a "edit notes" link
 						if ( $edit_notes_url = $this->get_edit_notes_url( $item_type, $item_id ) ) {
 							
-							$preview_notes_row .= ' <a data-item-row="' . $item_html_id . '" class="lock-your-updates-edit-notes" href="' . $edit_notes_url . '">' . __( 'Edit notes', $this->lock_your_updates->plugin_slug ) . '</a>';
+							// We need the singular type for the text
+							$singular_type = ( 'plugins' == $item_type ) ? 'plugin' : 'theme';
+							
+							$preview_notes_row .= ' <a data-item-row="' . $item_html_id . '" class="lock-your-updates-edit-notes" href="' . $edit_notes_url . '" title="' . sprintf( __( 'Edit the notes for this %s', $this->lock_your_updates->plugin_slug ), $singular_type ) . '">' . __( 'Edit notes', $this->lock_your_updates->plugin_slug ) . '</a>';
 								
 						}
 						
@@ -908,6 +914,61 @@ class Lock_Your_Updates_Admin {
 		}
 		
 		return $preview_notes_row;
+		
+	}
+	
+	/**
+	 * AJAX function to retrieve the "preview notes" area for
+	 * the theme overlay. This function is called once notes are saved.
+	 */
+	public function wp_ajax_get_themes_preview_notes_area() {
+		
+		// Get arguments
+		foreach( array( 'item_id', 'item_notes' ) as $param ) {
+			${$param} = isset( $_POST[ $param ] ) && ! empty( $_POST[ $param ] ) ? urldecode( $_POST[ $param ] ) : NULL;
+		}
+		
+		// Get/print the area
+		if ( $themes_preview_notes_area = $this->get_themes_preview_notes_area( $item_id, $item_notes ) ) {
+			
+			echo $themes_preview_notes_area;
+			
+		}
+		
+		die();
+		
+	}
+	
+	/**
+	 * Builds/retrieves the "preview notes" area for the theme overlay
+	 *
+	 * @since 1.1
+	 * @param string - $theme - the theme identifier
+	 * @param string - $theme_notes - the theme's notes
+	 */
+	private function get_themes_preview_notes_area( $theme, $theme_notes = NULL ) {
+		
+		// Build the area
+		$preview_notes_area = NULL;
+		
+		// If we have no notes, try to get them
+		if ( ! isset( $theme_notes ) || empty( $theme_notes ) )
+			$theme_notes = $this->get_item_notes( 'themes', $theme );
+		
+		// Is this item locked?
+		$item_is_locked = $this->is_item_locked( 'themes', $theme );
+	
+		// Build the HTML	
+		$preview_notes_area = '<div class="lock-your-updates-themes-notes-preview-area' . ( $item_is_locked ? ' locked' : NULL ) . '">' . wp_trim_words( $theme_notes, 15 );
+		
+		// Add the edit notes URL
+		if ( $edit_notes_url = $this->get_edit_notes_url( 'themes', $theme ) ) {
+			
+			$preview_notes_area .= ' <a class="lock-your-updates-edit-notes" href="' . $edit_notes_url . '" title="' . __( 'Edit the notes for this theme', $this->lock_your_updates->plugin_slug ) . '">' . __( 'Edit notes', $this->lock_your_updates->plugin_slug ) . '</a></div>';
+			
+		}
+		
+		return $preview_notes_area;
 		
 	}
 	
@@ -1486,13 +1547,13 @@ class Lock_Your_Updates_Admin {
 			return NULL;
 			
 		// Start building notes URL
-		$notes_url = is_network_admin() ? network_admin_url( "{$item_type}.php" ) : admin_url( "{$item_type}.php" );
+		$edit_notes_url = is_network_admin() ? network_admin_url( "{$item_type}.php" ) : admin_url( "{$item_type}.php" );
 
 		// Add the action and type parameters
-		$notes_url = add_query_arg( array( 'action' => "lock-your-updates-edit-notes-{$item_type}", $item_type => $item_id ), $notes_url );
+		$edit_notes_url = add_query_arg( array( 'action' => "lock-your-updates-edit-notes-{$item_type}", $item_type => $item_id ), $edit_notes_url );
 		
 		// Turn notes url into nonce URL and return
-		return wp_nonce_url( $notes_url, "lock-your-updates-edit-notes-{$item_type}-{$item_id}" );
+		return wp_nonce_url( $edit_notes_url, "lock-your-updates-edit-notes-{$item_type}-{$item_id}" );
 	
 	}
 	
@@ -1705,9 +1766,15 @@ class Lock_Your_Updates_Admin {
 				// Only return nonce verification if nonce is required
 				if ( $nonce_required )
 					$item_data[ 'passed_nonce' ] = true;
+					
+				// Is this item locked?
+				$item_is_locked = $this->is_item_locked( $item_type, $item_id );
 				
 				// Get the item note
 				$item_data[ 'notes' ] = $this->get_item_notes( $item_type, $item_id );
+				
+				// Set the item note preview HTML
+				$item_data[ 'notes_preview_html' ] = ( 'themes' == $item_type && ! empty( $item_data[ 'notes' ] ) ) ? $this->get_themes_preview_notes_area( $item_id, $item_data[ 'notes' ] ) : NULL;
 				
 				// We'll need the item name for later
 				$item_name = NULL;
@@ -1732,7 +1799,7 @@ class Lock_Your_Updates_Admin {
 							'version' => $plugin[ 'Version' ],
 							'author' => $plugin[ 'Author' ],
 							'authoruri' => $plugin[ 'AuthorURI' ],
-							'locked' => $this->is_item_locked( $item_type, $item_id ),
+							'locked' => $item_is_locked,
 						), $item_data );
 						
 					}
@@ -1751,7 +1818,7 @@ class Lock_Your_Updates_Admin {
 							'version' => $theme->get( 'Version' ),
 							'author' => $theme->get( 'Author' ),
 							'authoruri' => $theme->get( 'AuthorURI' ),
-							'locked' => $this->is_item_locked( $item_type, $item_id ),
+							'locked' => $item_is_locked,
 						), $item_data );
 							
 					}
@@ -1823,13 +1890,13 @@ class Lock_Your_Updates_Admin {
 					$notes_button_classes[] = 'empty';
 					
 				// Get notes URL
-				$notes_url = $this->get_edit_notes_url( 'themes', $theme_id );
+				$edit_notes_url = $this->get_edit_notes_url( 'themes', $theme_id );
 						
 				// Create the notes URL text
-				$notes_url_text = __( 'Edit the notes for this theme', $this->lock_your_updates->plugin_slug );
+				$edit_notes_url_text = __( 'Edit the notes for this theme', $this->lock_your_updates->plugin_slug );
 					
 				// Add notes button
-				?><a class="<?php echo implode( ' ', $notes_button_classes ); ?>" href="<?php echo $notes_url; ?>" title="<?php echo esc_attr( $notes_url_text ); ?>"><?php _e( 'Edit Notes', $this->lock_your_updates->plugin_slug ); ?></a><?php
+				?><a class="<?php echo implode( ' ', $notes_button_classes ); ?>" href="<?php echo $edit_notes_url; ?>" title="<?php echo esc_attr( $edit_notes_url_text ); ?>"><?php _e( 'Edit Notes', $this->lock_your_updates->plugin_slug ); ?></a><?php
 				
 			}
 					
