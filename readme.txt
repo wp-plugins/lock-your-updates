@@ -1,9 +1,9 @@
 === Lock Your Updates Plugins/Themes Manager ===
 Contributors: bamadesigner
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=bamadesigner%40gmail%2ecom&lc=US&item_name=Rachel%20Carden%20%28Lock%20Your%20Updates%29&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted
-Tags: update, updates, lock, unlock, theme, themes, plugin, plugins, manager, multisite, notes
+Tags: update, updates, disable, disabled, lock, unlock, theme, themes, plugin, plugins, manager, multisite, notes
 Requires at least: 3.8
-Tested up to: 4.1.1
+Tested up to: 4.2.2
 Stable tag: 1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
